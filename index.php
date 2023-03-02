@@ -2,6 +2,11 @@
 
 require 'connect.php';
 
+/**
+ *@var PDO $db
+ */
+
+
 $sql_select_goods = "select * from goods";
 $data = $db->query($sql_select_goods);
 $goods = $data->fetchAll(PDO::FETCH_ASSOC);
@@ -180,7 +185,7 @@ $goods = $data->fetchAll(PDO::FETCH_ASSOC);
                                                 <li><a href="product.html">product details Page</a></li>
                                                 <li><a href="compare.html">Compare Page</a></li>
                                                 <li><a href="cart.html">Cart Page</a></li>
-                                                <li><a href="checkout.html">Checkout Page</a></li>
+                                                <li><a href="checkout.php">Checkout Page</a></li>
                                                 <li><a href="wishlist.html">Wishlist Page</a></li>
                                             </ul>
                                             <!-- Home Version Dropdown End -->
@@ -225,23 +230,14 @@ $goods = $data->fetchAll(PDO::FETCH_ASSOC);
                                     <li><a href="#"><i class="fa fa-shopping-basket"></i><span class="cart-counter">0</span></a>
                                         <ul class="ht-dropdown main-cart-box">
                                             <li>
-                                                <!-- Cart Box Start -->
-                                                <div class="single-cart-box">
-                                                    <div class="cart-img">
-                                                        <a href="#"><img src="img/menu/1.jpg" alt="cart-image"></a>
-                                                    </div>
-                                                    <div class="cart-content">
-                                                        <h6><a href="product.html">Products Name</a></h6>
-                                                        <span>1 × $399.00</span>
-                                                    </div>
-                                                    <a class="del-icone" href="#"><i class="fa fa-window-close-o"></i></a>
+                                                <div class="cart-header">
+
                                                 </div>
-                                                <!-- Cart Box End -->
                                                 <!-- Cart Footer Inner Start -->
                                                 <div class="cart-footer fix">
-                                                    <h5>total :<span class="f-right cart-total"></span> руб.</h5>
+                                                    <h5>Total :<span class="f-right cart-total"></span></h5>
                                                     <div class="cart-actions">
-                                                        <a class="checkout" href="checkout.html">Checkout</a>
+                                                        <a class="checkout" href="checkout.php">Checkout</a>
                                                     </div>
                                                 </div>
                                                 <!-- Cart Footer Inner End -->
@@ -285,7 +281,7 @@ $goods = $data->fetchAll(PDO::FETCH_ASSOC);
                                                 <li><a href="product.html">product details Page</a></li>
                                                 <li><a href="compare.html">Compare Page</a></li>
                                                 <li><a href="cart.html">Cart Page</a></li>
-                                                <li><a href="checkout.html">Checkout Page</a></li>
+                                                <li><a href="checkout.php">Checkout Page</a></li>
                                                 <li><a href="wishlist.html">Wishlist Page</a></li>
                                             </ul>
                                             <!-- Mobile Menu Dropdown End -->

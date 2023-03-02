@@ -1,3 +1,27 @@
+<?php
+
+require_once "connect.php";
+
+/**
+ *@var PDO $db
+ */
+
+$user_id = 1;
+
+$sql_select_cart = "select g.id, g.name, c.amount, g.price * c.amount as total
+                    from carts c inner join goods g on c.good_id = g.id
+                    where c.user_id = :user_id";
+
+$query_select_cart = $db->prepare($sql_select_cart);
+
+$query_select_cart->execute(compact('user_id'));
+$cart = $query_select_cart->fetchAll(PDO::FETCH_ASSOC);
+
+$total = array_reduce($cart, fn($acc, $item) => $acc + $item['total'], 0);
+
+?>
+
+
 <!doctype html>
 <html class="no-js" lang="en-US">
 
@@ -109,7 +133,7 @@
                     <div class="row">
                         <div class="col-xl-3 col-lg-2 col-sm-5 col-5">
                             <div class="logo">
-                                <a href="index.html"><img src="img/logo/logo.png" alt="logo-image"></a>
+                                <a href="index.php"><img src="img/logo/logo.png" alt="logo-image"></a>
                             </div>
                         </div>
                         <!-- Primary Vertical-Menu End -->
@@ -118,10 +142,10 @@
                             <div class="middle-menu pull-right">
                                 <nav>
                                     <ul class="middle-menu-list">
-                                        <li><a href="index.html">home<i class="fa fa-angle-down"></i></a>
+                                        <li><a href="index.php">home<i class="fa fa-angle-down"></i></a>
                                             <!-- Home Version Dropdown Start -->
                                             <ul class="ht-dropdown home-dropdown">
-                                                <li><a href="index.html">Home Version One</a></li>
+                                                <li><a href="index.php">Home Version One</a></li>
                                                 <li><a href="index-2.html">Home Version Two</a></li>
                                                 <li><a href="index-3.html">Home Box Layout</a></li>
                                             </ul>
@@ -187,42 +211,21 @@
                                         <ul class="ht-dropdown">
                                             <li><a href="login.html">Login</a></li>
                                             <li><a href="register.html">Register</a></li>
-                                            <li><a href="account.html">Account</a></li>                                            
+                                            <li><a href="account.html">Account</a></li>
                                         </ul>
-                                    </li>                                    
+                                    </li>
                                     <li><a href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-basket"></i><span class="cart-counter">2</span></a>
+                                    <li><a href="#"><i class="fa fa-shopping-basket"></i><span class="cart-counter">0</span></a>
                                         <ul class="ht-dropdown main-cart-box">
                                             <li>
-                                                <!-- Cart Box Start -->
-                                                <div class="single-cart-box">
-                                                    <div class="cart-img">
-                                                        <a href="#"><img src="img/menu/1.jpg" alt="cart-image"></a>
-                                                    </div>
-                                                    <div class="cart-content">
-                                                        <h6><a href="product.html">Products Name</a></h6>
-                                                        <span>1 × $399.00</span>
-                                                    </div>
-                                                    <a class="del-icone" href="#"><i class="fa fa-window-close-o"></i></a>
+                                                <div class="cart-header">
+
                                                 </div>
-                                                <!-- Cart Box End -->
-                                                <!-- Cart Box Start -->
-                                                <div class="single-cart-box">
-                                                    <div class="cart-img">
-                                                        <a href="#"><img src="img/menu/2.jpg" alt="cart-image"></a>
-                                                    </div>
-                                                    <div class="cart-content">
-                                                        <h6><a href="product.html">Products Name</a></h6>
-                                                        <span>2 × $299.00</span>
-                                                    </div>
-                                                    <a class="del-icone" href="#"><i class="fa fa-window-close-o"></i></a>
-                                                </div>
-                                                <!-- Cart Box End -->
                                                 <!-- Cart Footer Inner Start -->
                                                 <div class="cart-footer fix">
-                                                    <h5>total :<span class="f-right">$698.00</span></h5>
+                                                    <h5>Total :<span class="f-right cart-total"></span></h5>
                                                     <div class="cart-actions">
-                                                        <a class="checkout" href="checkout.html">Checkout</a>
+                                                        <a class="checkout" href="checkout.php">Checkout</a>
                                                     </div>
                                                 </div>
                                                 <!-- Cart Footer Inner End -->
@@ -237,10 +240,10 @@
                             <div class="mobile-menu">
                                 <nav>
                                     <ul>
-                                        <li><a href="index.html">home</a>
+                                        <li><a href="index.php">home</a>
                                             <!-- Home Version Dropdown Start -->
                                             <ul>
-                                                <li><a href="index.html">Home Version One</a></li>
+                                                <li><a href="index.php">Home Version One</a></li>
                                                 <li><a href="index-2.html">Home Version Two</a></li>
                                                 <li><a href="index-3.html">Home Box Layout</a></li>
                                             </ul>
@@ -307,7 +310,7 @@
             <div class="container">
                 <div class="breadcrumb">
                     <ul>
-                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.php">Home</a></li>
                         <li class="active"><a href="checkout.html">Checkout</a></li>
                     </ul>
                 </div>
@@ -376,7 +379,7 @@
         <!-- checkout-area start -->
         <div class="checkout-area pt-30  pb-60">
             <div class="container">
-                <form action="#">                
+                <form action="#" id="order">
                     <div class="row">
                         <div class="col-lg-6 col-md-6">
                             <div class="checkbox-form">
@@ -570,35 +573,32 @@
                                         <thead>
                                             <tr>
                                                 <th class="product-name">Product</th>
+                                                <th class="product-amount">Amount</th>
                                                 <th class="product-total">Total</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr class="cart_item">
-                                                <td class="product-name">
-                                                    Products Name Here <strong class="product-quantity"> × 1</strong>
-                                                </td>
-                                                <td class="product-total">
-                                                    <span class="amount">£165.00</span>
-                                                </td>
-                                            </tr>
-                                            <tr class="cart_item">
-                                                <td class="product-name">
-                                                    Products Name Here <strong class="product-quantity"> × 1</strong>
-                                                </td>
-                                                <td class="product-total">
-                                                    <span class="amount">£50.00</span>
-                                                </td>
-                                            </tr>
+                                            <?php foreach ($cart as $good): ?>
+                                                <tr class="cart_item" data-id="<?=$good['id']?>">
+                                                    <td class="product-name">
+                                                        <?=$good['name']?>
+                                                    </td>
+                                                    <td class="product-amount">
+                                                        <button type="button" class="amount-minus">-</button>
+                                                        <strong><?=$good['amount']?></strong>
+                                                        <button type="button" class="amount-plus">+</button>
+                                                    </td>
+                                                    <td class="product-total">
+                                                        <span class="amount"><?=$good['total']?>руб.</span>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
                                         </tbody>
                                         <tfoot>
-                                            <tr class="cart-subtotal">
-                                                <th>Cart Subtotal</th>
-                                                <td><span class="amount">£215.00</span></td>
-                                            </tr>
                                             <tr class="order-total">
                                                 <th>Order Total</th>
-                                                <td><strong><span class="amount">£215.00</span></strong>
+                                                <td></td>
+                                                <td><strong><span class="amount"><?=$total?>руб.</span></strong>
                                                 </td>
                                             </tr>
                                         </tfoot>
@@ -865,6 +865,8 @@
     <script src="js/plugins.js"></script>
     <!-- main js -->
     <script src="js/main.js"></script>
+    <!-- cart js -->
+    <script src="js/cart.js"></script>
 </body>
 
 </html>
